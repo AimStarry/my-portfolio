@@ -1,0 +1,41 @@
+<section class="hero-container" (mousemove)="onMouseMove($event)">
+  <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
+  
+  <div class="bg-grid"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="content-wrapper">
+    <div class="text-side">
+      <p class="greeting reveal-text anim-delay-1">Hey! I'm</p>
+      
+      <div class="name-container reveal-text anim-delay-2">
+        <h1 class="name hover-name">
+          Aimee Li<br>
+          Marael S.<br>
+          Pangan
+        </h1>
+      </div>
+      
+      <div class="roles reveal-text anim-delay-3">
+        <span>Data Management</span> • <span>UI/UX</span> • <span>Web Development</span>
+      </div>
+      
+      <p class="tagline reveal-text anim-delay-4">
+        "Where structure meets creativity."
+      </p>
+      
+      <div class="reveal-text anim-delay-5">
+        <button routerLink="/projects" class="view-btn">
+          View Projects <span class="arrow">&rarr;</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="graphic-side reveal-text anim-delay-2">
+      <div class="isometric-shape">
+        <img src="/assets/hero-image-database.png" alt="3D Development Graphic">
+      </div>
+    </div>
+  </div>
+</section>

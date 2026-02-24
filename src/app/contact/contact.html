@@ -1,0 +1,79 @@
+<section #section class="contact-section" (mousemove)="onMouseMove($event)">
+  <div class="mouse-spotlight"></div>
+
+  <div class="bg-layer-top"></div>
+  <div class="bg-layer-bottom"></div>
+
+  <div class="content-container">
+    <div class="info-column">
+      <h2 class="massive-title">LET'S<br><span>TALK</span></h2>
+      <p class="main-question">Ready to bring your vision to life?</p>
+      
+      <p class="description-text">
+        The first step is getting to know each other. I'm excited to hear your ideas and how we can collaborate!
+      </p>
+
+      <div class="contact-details">
+        <div class="detail-item">
+          <i class="fas fa-envelope"></i>
+          <a href="mailto:aimeelimaraelst@gmail.com">aimeelimaraelst@gmail.com</a>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Angeles City, Philippines</span>
+        </div>
+      </div>
+
+      <div class="social-actions">
+        <p>Choose your preferred way to connect:</p>
+        <div class="btn-group-row">
+          <a href="https://github.com/AimStarry" target="_blank" class="action-btn">
+            <i class="fab fa-github"></i> Github
+          </a>
+          <a href="https://www.linkedin.com/in/aimee-li-marael-pangan-56a41634a" target="_blank" class="action-btn">
+            <i class="fab fa-linkedin-in"></i> LinkedIn
+          </a>
+          <a href="https://www.facebook.com/atmbyjihyo" target="_blank" class="action-btn">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-column">
+      <div class="form-card">
+        <form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)">
+          <div class="input-field">
+            <input type="text" name="name" required placeholder="Name / Company*" ngModel>
+          </div>
+          
+          <div class="input-field">
+            <input type="email" name="email" required email placeholder="Email Address*" ngModel>
+          </div>
+
+          <div class="input-field">
+            <textarea name="message" rows="4" required placeholder="Tell me about your project...*" ngModel></textarea>
+          </div>
+
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="consent" required name="consent" ngModel>
+            <label for="consent">I agree to the processing of my data.</label>
+          </div>
+
+          <button type="submit" class="send-btn" [disabled]="!contactForm.valid || isSubmitting">
+            <span *ngIf="!isSubmitting">SEND <i class="fas fa-paper-plane"></i></span>
+            <span *ngIf="isSubmitting">SENDING...</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showSuccess">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 10px;">Success, {{ lastSentName }}!</h3>
+      <p>I've received your message. Let's create something amazing together.</p>
+      <button class="close-btn" (click)="closeModal()">CLOSE</button>
+    </div>
+  </div>
+</section>

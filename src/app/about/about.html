@@ -1,0 +1,107 @@
+<section class="about-page" (mousemove)="onMouseMove($event)">
+  <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
+
+  <div class="main-wrapper">
+    
+    <div class="glass-panel bio-section reveal">
+      <div class="bio-image">
+        <div class="image-accent"></div>
+        <img src="assets/profile.png" alt="Aimee Pangan">
+      </div>
+      <div class="bio-text">
+        <h2 class="center-title">Who I <span>Am?</span></h2>
+        <p>I am a 3rd Year IT Web Development student with a strong interest in <strong>Database Management</strong> and <strong>UI/UX Design</strong>. I enjoy building systems that are not only technically efficient but also intuitive and user-friendly.</p>
+        <p class="italic-tagline">"Where structure meets creativity, balancing clean data logic with thoughtful design".</p>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="glass-panel skills-box reveal">
+        <h2 class="center-title">Technical <span>Expertise</span></h2>
+        <div class="skill-item" *ngFor="let s of techSkills">
+          <div class="skill-info">
+            <span>{{s.name}} </span>
+            <span>{{s.percent}}%</span>
+          </div>
+          <div class="progress-bg">
+            <div class="progress-fill" [attr.data-width]="s.percent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel soft-skills-box reveal delay-1">
+        <h2 class="center-title">Soft <span>Skills</span></h2>
+        <div class="tag-cloud">
+          <span class="skill-tag" *ngFor="let tag of ['Problem-Solving', 'Time Management', 'Communication', 'Adaptability', 'Critical Thinking', 'Team Collaboration']">{{tag}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-marquee-container reveal">
+      <h3 class="marquee-title">Tools I Work With</h3>
+      <div class="marquee-wrapper">
+        <div class="marquee-content">
+          <span>VS Code</span> • <span>Figma</span> • <span>Postman</span> • <span>MongoDB</span> • 
+          <span>Netlify</span> • <span>GitHub</span> • <span>Angular CLI</span> • <span>Canva</span> •
+          <span>SQL</span> • <span>Python</span> •
+          <span>VS Code</span> • <span>Figma</span> • <span>Postman</span> • <span>MongoDB</span> • 
+          <span>Netlify</span> • <span>GitHub</span> • <span>Angular CLI</span> • <span>Canva</span> •
+          <span>SQL</span> • <span>Python</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="education-section glass-panel reveal">
+      <h2 class="center-title">Academic <span>Journey</span></h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3>Holy Angel University</h3>
+              <span class="timeline-date">2023 — Present</span>
+            </div>
+            <p class="degree-title">Bachelor of Science in Information Technology</p>
+            <p class="specialization">Area of Specialization in Web Development</p>
+            <ul class="edu-highlights">
+              <li>Focused on Database Management and clean data logic.</li>
+              <li>Developing expertise in UI/UX Design and intuitive system building.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonials-section reveal">
+      <h2 class="center-title">Testimonials</h2>
+      <div class="testimonials-grid">
+        <div class="testimonial-card glass-panel" *ngFor="let t of testimonials">
+          <div class="quote-icon">“</div>
+          <div class="rating">★★★★★</div>
+          <p class="testimonial-text">{{t.content}}</p>
+          <div class="testimonial-footer">
+            <div class="client-avatar">{{t.initials}}</div>
+            <div class="client-info">
+              <span class="client-name">{{t.name}}</span><br>
+              <span class="client-role">{{t.role}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-section reveal">
+        <h2 class="center-title">Certifications</h2>
+        <div class="cert-grid">
+          <div class="cert-card scale-reveal" *ngFor="let cert of certifications">
+            <div class="cert-img-wrapper">
+              <img [src]="cert.image" [alt]="cert.title">
+            </div>
+            <h4>{{cert.title}}</h4>
+            <p>{{cert.date}}</p>
+            <a [href]="cert.link" class="download-btn" download>Download PDF</a>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>

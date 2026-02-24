@@ -1,0 +1,94 @@
+<section class="projects-wrapper">
+  <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
+  
+  <div class="mesh-gradient"></div>
+  <div class="bg-decor blur-1"></div>
+  <div class="bg-decor blur-2"></div>
+
+  <div class="gallery-view" *ngIf="!selectedProject">
+    <div class="header-group reveal">
+      <h2 class="center-title">Featured <span>Work</span></h2>
+      <p class="subtitle">Turning complex logic into elegant interfaces</p>
+      
+      <div class="stats-bar">
+        <div class="stat-item reveal">
+          <span class="stat-num">3rd</span>
+          <span class="stat-label">Year IT</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item reveal">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Dedication</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="projects-grid">
+      <div class="project-card" *ngFor="let project of projectList; let i = index" [style.transition-delay]="i * 0.1 + 's'">
+        <div class="card-inner">
+          <div class="project-img">
+            <img [src]="project.thumbnail" [alt]="project.name">
+            <div class="category-tag">{{ project.category }}</div>
+            <div class="overlay">
+              <button (click)="selectProject(project)" class="view-btn">
+                View Details
+              </button>
+            </div>
+          </div>
+          
+          <div class="project-info">
+            <h3>{{ project.name }}</h3>
+            <p>{{ project.shortDesc }}</p>
+            <div class="tools-tags">
+              <span *ngFor="let tool of project.tools">{{ tool }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-view" *ngIf="selectedProject">
+    <div class="navigation-header reveal">
+      <button (click)="closeDetails()" class="back-link">
+        <span class="arrow">←</span> Back to Projects
+      </button>
+    </div>
+    
+    <h2 class="center-title reveal">{{ selectedProject.name }}</h2>
+    
+    <div class="detail-layout">
+      <div class="visuals-gallery reveal">
+        <img *ngFor="let img of selectedProject.screenshots" 
+             [src]="img" 
+             class="gallery-img" 
+             alt="Project Screenshot">
+      </div>
+
+      <div class="info-pane reveal">
+        <div class="info-group">
+          <h3>The Purpose</h3>
+          <p>{{ selectedProject.fullDescription }}</p>
+        </div>
+        
+        <div class="info-group">
+          <h3>Tech Stack</h3>
+          <div class="tag-bar">
+            <span class="skill-tag" *ngFor="let tool of selectedProject.tools">
+              {{ tool }}
+            </span>
+          </div>
+        </div>
+
+        <div class="action-links">
+          <a [href]="selectedProject.demoUrl" target="_blank" class="btn-launch">
+            Launch Live Demo
+          </a>
+          <a [href]="selectedProject.githubUrl" target="_blank" class="btn-source">
+            Source Code
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
