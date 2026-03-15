@@ -1,19 +1,33 @@
 <section class="projects-wrapper">
   <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
-  
+
+  <div class="bg-grid-projects"></div>
   <div class="mesh-gradient"></div>
   <div class="bg-decor blur-1"></div>
   <div class="bg-decor blur-2"></div>
+  <div class="page-number-deco">03</div>
 
   <div class="gallery-view" *ngIf="!selectedProject">
+
+    <div class="section-eyebrow reveal">
+      <span class="eyebrow-line"></span>
+      <span class="eyebrow-text">Portfolio</span>
+      <span class="eyebrow-line"></span>
+    </div>
+
     <div class="header-group reveal">
       <h2 class="center-title">Featured <span>Work</span></h2>
       <p class="subtitle">Turning complex logic into elegant interfaces</p>
-      
+
       <div class="stats-bar">
         <div class="stat-item reveal">
           <span class="stat-num">3rd</span>
           <span class="stat-label">Year IT</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item reveal">
+          <span class="stat-num">{{ projectList.length }}</span>
+          <span class="stat-label">Projects</span>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item reveal">
@@ -24,53 +38,128 @@
     </div>
 
     <div class="projects-grid">
-      <div class="project-card" *ngFor="let project of projectList; let i = index" [style.transition-delay]="i * 0.1 + 's'">
+      <div
+        class="project-card"
+        *ngFor="let project of projectList; let i = index"
+        [style.transition-delay]="i * 0.1 + 's'"
+      >
         <div class="card-inner">
+
           <div class="project-img">
-            <img [src]="project.thumbnail" [alt]="project.name">
+            <img [src]="project.thumbnail" [alt]="project.name + ' project thumbnail'">
             <div class="category-tag">{{ project.category }}</div>
+
+            <div class="project-num-badge">{{ (i + 1).toString().padStart(2, '0') }}</div>
+
+            <div class="card-status-pills">
+              <span class="status-pill live" *ngIf="project.demoUrl">
+                <span class="live-dot"></span> Live
+              </span>
+              <span class="status-pill source">
+                <i class="fab fa-github"></i> Source
+              </span>
+            </div>
+
             <div class="overlay">
               <button (click)="selectProject(project)" class="view-btn">
-                View Details
+                <i class="fas fa-eye"></i> View Details
               </button>
             </div>
           </div>
-          
+
           <div class="project-info">
             <h3>{{ project.name }}</h3>
             <p>{{ project.shortDesc }}</p>
+
+            <div class="role-badge">
+              <i class="fas fa-user-cog"></i>
+              {{ project.role }}
+            </div>
+
             <div class="tools-tags">
               <span *ngFor="let tool of project.tools">{{ tool }}</span>
             </div>
           </div>
+
+          <div class="card-footer">
+            <a [href]="project.githubUrl" target="_blank" class="card-footer-link" (click)="$event.stopPropagation()">
+              <i class="fab fa-github"></i> GitHub
+            </a>
+            <a *ngIf="project.demoUrl" [href]="project.demoUrl" target="_blank" class="card-footer-link demo" (click)="$event.stopPropagation()">
+              <i class="fas fa-external-link-alt"></i> Demo
+            </a>
+            <button class="card-footer-detail" (click)="selectProject(project)">
+              Details <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
 
   <div class="detail-view" *ngIf="selectedProject">
+
     <div class="navigation-header reveal">
       <button (click)="closeDetails()" class="back-link">
-        <span class="arrow">←</span> Back to Projects
+        <i class="fas fa-arrow-left"></i> Back to Projects
       </button>
     </div>
-    
-    <h2 class="center-title reveal">{{ selectedProject.name }}</h2>
-    
+
+    <div class="detail-header reveal">
+      <h2 class="center-title">{{ selectedProject.name }}</h2>
+      <span class="detail-category-tag">{{ selectedProject.category }}</span>
+    </div>
+
     <div class="detail-layout">
+
       <div class="visuals-gallery reveal">
-        <img *ngFor="let img of selectedProject.screenshots" 
-             [src]="img" 
-             class="gallery-img" 
-             alt="Project Screenshot">
+
+        <div class="video-container" *ngIf="selectedProject.demoVideoUrl">
+          <div class="media-label"><i class="fas fa-play-circle"></i> Demo Video</div>
+          <video controls class="gallery-video" [src]="selectedProject.demoVideoUrl">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <div class="screenshots-block" *ngIf="selectedProject.screenshots?.length">
+          <div class="media-label">
+            <i class="fas fa-images"></i> Screenshots
+          </div>
+          <img
+            *ngFor="let img of selectedProject.screenshots; let si = index"
+            [src]="img"
+            class="gallery-img"
+            [alt]="selectedProject.name + ' screenshot ' + (si + 1)"
+          >
+        </div>
       </div>
 
       <div class="info-pane reveal">
+
         <div class="info-group">
           <h3>The Purpose</h3>
           <p>{{ selectedProject.fullDescription }}</p>
         </div>
-        
+
+        <div class="info-group">
+          <h3>My Role</h3>
+          <div class="role-display">
+            <i class="fas fa-user-cog role-icon"></i>
+            <span>{{ selectedProject.role }}</span>
+          </div>
+        </div>
+
+        <div class="info-group" *ngIf="selectedProject.contributions?.length">
+          <h3>Contributions</h3>
+          <ul class="contributions-list">
+            <li *ngFor="let item of selectedProject.contributions">
+              <i class="fas fa-check-circle contrib-check"></i>
+              {{ item }}
+            </li>
+          </ul>
+        </div>
+
         <div class="info-group">
           <h3>Tech Stack</h3>
           <div class="tag-bar">
@@ -81,13 +170,26 @@
         </div>
 
         <div class="action-links">
-          <a [href]="selectedProject.demoUrl" target="_blank" class="btn-launch">
-            Launch Live Demo
+          <a
+            *ngIf="selectedProject.demoUrl; else noDemo"
+            [href]="selectedProject.demoUrl"
+            target="_blank"
+            class="btn-launch"
+          >
+            <i class="fas fa-external-link-alt"></i> Launch Live Demo
           </a>
+          <ng-template #noDemo>
+            <div class="no-demo-notice">
+              <i class="fas fa-info-circle"></i>
+              <span>Live demo unavailable due to hosting constraints.</span>
+            </div>
+          </ng-template>
+
           <a [href]="selectedProject.githubUrl" target="_blank" class="btn-source">
-            Source Code
+            <i class="fab fa-github"></i> Source Code
           </a>
         </div>
+
       </div>
     </div>
   </div>

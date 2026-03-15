@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -18,14 +18,15 @@ export class Home {
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
   }
-    viewMyWork() {
-      this.router.navigate(['/projects']);
-    }
 
-    downloadResume() {
-      const link = document.createElement('a');
-      link.href = 'assets/resume.pdf';
-      link.download = 'Aimee_Pangan_Resume.pdf';
-      link.click();
-    }
+  viewMyWork() {
+    this.router.navigate(['/projects']);
+  }
+
+  downloadResume() {
+    const link = document.createElement('a');
+    link.href = 'assets/resume.pdf';
+    link.download = 'Aimee_Pangan_Resume.pdf';
+    link.click();
+  }
 }

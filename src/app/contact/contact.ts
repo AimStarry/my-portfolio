@@ -31,22 +31,19 @@ export class Contact implements AfterViewInit, OnDestroy {
     this.ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1 } });
 
-      tl.from('.massive-title', { y: 50, opacity: 0, skewY: 3, delay: 0.2 })
-        .from('.main-question', { y: 20, opacity: 0 }, '-=0.7')
+      tl.from('.section-eyebrow',  { y: 20, opacity: 0, delay: 0.1 })
+        .from('.massive-title',    { y: 50, opacity: 0, skewY: 3 }, '-=0.8')
+        .from('.main-question',    { y: 20, opacity: 0 }, '-=0.7')
         .from('.description-text', { y: 20, opacity: 0 }, '-=0.8')
-        .from('.detail-item', { x: -20, opacity: 0, stagger: 0.1 }, '-=0.8')
-        
-        .to('.action-btn', { 
-          autoAlpha: 1, 
-          y: 0, 
-          stagger: 0.1, 
-          duration: 0.6,
+        .from('.detail-item',      { x: -20, opacity: 0, stagger: 0.1 }, '-=0.8')
+        .from('.resume-btn',       { y: 15, opacity: 0 }, '-=0.6')
+        .to('.action-btn', {
+          autoAlpha: 1, y: 0,
+          stagger: 0.1, duration: 0.6,
           display: 'inline-flex'
-        }, '-=0.7')
-        
-        .from('.form-card', { x: 40, opacity: 0, scale: 0.98 }, '-=1.2')
-        .from('.send-btn', { scaleX: 0, opacity: 0, transformOrigin: "left" }, '-=0.4');
-    }, this.section); 
+        }, '-=0.6')
+        .from('.form-card',  { x: 40, opacity: 0, scale: 0.98 }, '-=1.0');
+    }, this.section);
   }
 
   ngOnDestroy() {
@@ -64,13 +61,30 @@ export class Contact implements AfterViewInit, OnDestroy {
   onSubmit(form: NgForm) {
     if (form.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      emailjs.send('service_phoehe2', 'template_j0rq1xc', {
-        name: form.value.name,
-        email: form.value.email,
-        message: form.value.message,
-        to_name: 'Aimee Li',
-      }, 'WX3gjhNivPgB7FKE5')
+      emailjs.send(
+        'service_phoehe2',
+        'template_j0rq1xc',
+        {
+          name:    form.value.name,
+          email:   form.value.email,
+          subject: form.value.subject || '(No subject)',
+          message: form.value.message,
+          to_name: 'Aimee Li',
+        },
+        'WX3gjhNivPgB7FKE5'
+      )
       .then(() => {
+        emailjs.send(
+          'service_phoehe2',
+          'template_yrc2aer',
+          {
+            name:    form.value.name,
+            email:   form.value.email,
+            subject: form.value.subject || '(No subject)',
+            message: form.value.message,
+          },
+          'WX3gjhNivPgB7FKE5'
+        );
         this.showSuccess = true;
         this.lastSentName = form.value.name;
         form.resetForm();

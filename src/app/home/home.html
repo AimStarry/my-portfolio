@@ -1,14 +1,23 @@
 <section class="hero-container" (mousemove)="onMouseMove($event)">
   <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
-  
+
   <div class="bg-grid"></div>
+  <div class="bg-scanline"></div>
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="data-node node-a"></div>
+  <div class="data-node node-b"></div>
+  <div class="data-node node-c"></div>
+  <div class="connector-line line-1"></div>
+  <div class="connector-line line-2"></div>
 
   <div class="content-wrapper">
     <div class="text-side">
+
       <p class="greeting reveal-text anim-delay-1">Hey! I'm</p>
-      
+
       <div class="name-container reveal-text anim-delay-2">
         <h1 class="name hover-name">
           Aimee Li<br>
@@ -16,20 +25,50 @@
           Pangan
         </h1>
       </div>
-      
+
       <div class="roles reveal-text anim-delay-3">
-        <span>Data Management</span> • <span>UI/UX</span> • <span>Web Development</span>
+        <span class="role-pill">Database</span>
+        <span class="role-divider">•</span>
+        <span class="role-pill">UI/UX</span>
+        <span class="role-divider">•</span>
+        <span class="role-pill">Web Development</span>
       </div>
-      
+
+      <p class="intro-statement reveal-text anim-delay-4">
+        An IT student at Holy Angel University. I turn structured data and clean code 
+        into systems that are as reliable as they are intuitive.
+      </p>
+
       <p class="tagline reveal-text anim-delay-4">
         "Where structure meets creativity."
       </p>
-      
-      <div class="reveal-text anim-delay-5">
+
+      <div class="cta-group reveal-text anim-delay-5">
         <button routerLink="/projects" class="view-btn">
           View Projects <span class="arrow">&rarr;</span>
         </button>
+        <button routerLink="/contact" class="contact-btn">
+          Contact Me
+        </button>
       </div>
+
+      <div class="quick-stats reveal-text anim-delay-5">
+        <div class="quick-stat">
+          <span class="qs-num">5+</span>
+          <span class="qs-label">Projects</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-num">3+</span>
+          <span class="qs-label">Certifications</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-num">OJT</span>
+          <span class="qs-label">Ready</span>
+        </div>
+      </div>
+
     </div>
 
     <div class="graphic-side reveal-text anim-delay-2">
