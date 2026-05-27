@@ -114,6 +114,45 @@ export class Projects implements AfterViewInit {
       demoUrl: null,
       githubUrl: 'https://github.com/AimStarry/Inventory-System-Python',
     },
+    {
+      id: 6,
+      name: 'AningKabalen',
+      category: 'Full-Stack Web',
+      shortDesc: 'AningKabalen is a full-stack, real-time digital marketplace designed to eliminate predatory middlemen and connect local farmers in Pampanga directly with HORECA (Hotel, Restaurant, Catering) buyers.',
+      fullDescription: 'AningKabalen is a full-stack, real-time digital marketplace designed to eliminate predatory middlemen and connect local farmers in Pampanga directly with HORECA (Hotel, Restaurant, Catering) buyers. Built on a reactive Angular frontend and a robust Node.js/Express backend, the platform combines a Live Freshness Feed and a Digital Handshake (Forward Contract) system to ensure fair pricing and strengthen localized food security.',
+      role: 'Systems Analyst & Database Designer',
+      contributions: [
+        'Spearheaded the initial system proposal and feature roadmap, defining the marketplace mechanics and structural business requirements.',
+        'Designed and implemented the core database layer to handle secure, real-time product inventories and vendor transactions.',
+        'Contributed directly to frontend development, utilizing Angular to translate wireframes into interactive, user-facing client application layouts.'
+      ],
+      tools: ['Node.js', 'Express.js', 'Angular', 'MongoDB'],
+      thumbnail: 'assets/p6-main.png',
+      screenshots: ['assets/p6-ss1.png', 'assets/p6-ss2.png'],
+      demoVideoUrl: null,
+      demoUrl: null,
+      githubUrl: 'https://github.com/AimStarry/AningKabalen',
+    },
+    {
+      id: 7,
+      name: 'Bossrich Photography',
+      category: 'Web Design & SEO Optimization',
+      shortDesc: 'Bossrich Photography is a static, highly optimized responsive showcase website built as a digital portfolio and lead generation hub for a professional photography business.',
+      fullDescription: 'Bossrich Photography is a static responsive website engineered to maximize search engine visibility and user engagement for a local photography studio. Built with WordPress, the platform focuses heavily on on-page SEO architecture, visual hierarchy, and localized content marketing strategies to rank for highly competitive industry keywords.',
+      role: 'UI/UX Designer & SEO Specialist',
+      contributions: [
+        'Spearheaded the UI/UX design layout, focusing on visual hierarchy, cross-device responsiveness, and a friction-free user portfolio experience.',
+        'Conducted comprehensive keyword research and implemented strategic keyword stuffing, meta titles, alt text, and meta descriptions across core pages.',
+        'Authored optimized blog content architectures designed to capture localized organic search intent and improve domain authority.',
+        'Configured technical on-page SEO settings, sitemaps, and indexing properties to enhance visibility under search engine analytics frameworks.'
+      ],
+      tools: ['WordPress', 'SEO Tools', 'Google Analytics'],
+      thumbnail: 'assets/project7-main.png',
+      screenshots: ['assets/p7-ss1.png', 'assets/p7-ss2.png'],
+      demoVideoUrl: null,
+      demoUrl: 'https://bossrichphoto.pro',
+      githubUrl: null,
+    },
   ];
 
   constructor(private el: ElementRef) {}

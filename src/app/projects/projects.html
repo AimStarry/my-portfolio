@@ -21,7 +21,7 @@
 
       <div class="stats-bar">
         <div class="stat-item reveal">
-          <span class="stat-num">3rd</span>
+          <span class="stat-num">4th</span>
           <span class="stat-label">Year IT</span>
         </div>
         <div class="stat-divider"></div>
@@ -185,9 +185,20 @@
             </div>
           </ng-template>
 
-          <a [href]="selectedProject.githubUrl" target="_blank" class="btn-source">
+          <a 
+            *ngIf="selectedProject.githubUrl; else noSource" 
+            [href]="selectedProject.githubUrl" 
+            target="_blank" 
+            class="btn-source"
+          >
             <i class="fab fa-github"></i> Source Code
           </a>
+          <ng-template #noSource>
+            <div class="no-source-notice">
+              <i class="fas fa-lock"></i>
+              <span>Source code private due to client/proprietary terms.</span>
+            </div>
+          </ng-template>
         </div>
 
       </div>

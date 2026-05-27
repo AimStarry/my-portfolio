@@ -44,13 +44,13 @@ export class About implements AfterViewInit {
     {
       horizon: 'Immediate',
       icon: 'fas fa-briefcase',
-      title: 'OJT in Database / Data Engineering',
+      title: 'OJT in Database Development/ Frontend Development',
       description: 'Gain hands-on industry experience working on real databases, data pipelines, and backend systems to bridge academic knowledge with professional practice.',
     },
     {
       horizon: 'Short-Term',
       icon: 'fas fa-rocket',
-      title: 'Junior Data Engineer or Frontend Developer',
+      title: 'Junior Database Developer or Frontend Developer',
       description: 'After graduation, join a company where I can grow expertise in building intuitive, performant user interfaces while staying grounded in clean data architecture.',
     },
     {
