@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, HostListener } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, HostListener, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-about',
@@ -8,7 +8,7 @@ import { Component, AfterViewInit, ElementRef, HostListener } from '@angular/cor
   templateUrl: './about.html',
   styleUrl: './about.css',
 })
-export class About implements AfterViewInit {
+export class About implements AfterViewInit, OnDestroy {
 
   mouseX = 0;
   mouseY = 0;
@@ -19,14 +19,81 @@ export class About implements AfterViewInit {
     this.mouseY = event.clientY;
   }
 
+  // ── CERT SLIDER STATE ────────────────────────────────────
+  certActiveIndex = 0;
+  certAnimating   = false;
+  certTrackX      = 0;
+
+  private certAutoTimer: any;
+  private certTouchStartX = 0;
+  private readonly CERT_SLIDE_W = 480;
+  private readonly CERT_AUTO_MS = 4000;
+
+  certGoTo(index: number): void {
+    if (this.certAnimating) return;
+    this.certAnimating = true;
+    this.certActiveIndex = Math.max(0, Math.min(index, this.certifications.length - 1));
+    this.certTrackX = -this.certActiveIndex * this.CERT_SLIDE_W;
+    setTimeout(() => { this.certAnimating = false; }, 600);
+  }
+
+  certNext(): void {
+    if (this.certActiveIndex < this.certifications.length - 1) {
+      this.certGoTo(this.certActiveIndex + 1);
+    } else {
+      this.certGoTo(0);
+    }
+  }
+
+  certPrev(): void {
+    if (this.certActiveIndex > 0) {
+      this.certGoTo(this.certActiveIndex - 1);
+    } else {
+      this.certGoTo(this.certifications.length - 1);
+    }
+  }
+
+  certStartAuto(): void {
+    this.certAutoTimer = setInterval(() => this.certNext(), this.CERT_AUTO_MS);
+  }
+
+  certPauseAuto(): void {
+    clearInterval(this.certAutoTimer);
+  }
+
+  certResumeAuto(): void {
+    this.certStartAuto();
+  }
+
+  certTouchStart(e: TouchEvent): void {
+    this.certTouchStartX = e.changedTouches[0].clientX;
+    this.certPauseAuto();
+  }
+
+  certTouchEnd(e: TouchEvent): void {
+    const dx = e.changedTouches[0].clientX - this.certTouchStartX;
+    if (Math.abs(dx) > 50) {
+      dx < 0 ? this.certNext() : this.certPrev();
+    }
+    this.certResumeAuto();
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'ArrowRight') this.certNext();
+    if (e.key === 'ArrowLeft')  this.certPrev();
+  }
+
+  // ── DATA ─────────────────────────────────────────────────
+
   techSkills = [
-    { name: 'SQL / MySQL / PostgreSQL',    percent: 90, icon: 'fas fa-database' },
-    { name: 'MongoDB / NoSQL',              percent: 85, icon: 'fas fa-leaf' },
-    { name: 'HTML / CSS / JavaScript',      percent: 88, icon: 'fas fa-code' },
-    { name: 'PHP / Node.js / Python',       percent: 80, icon: 'fas fa-server' },
-    { name: 'Angular / Vue.js',             percent: 78, icon: 'fas fa-layer-group' },
-    { name: 'UI/UX Design (Figma)',         percent: 82, icon: 'fas fa-pen-ruler' },
-    { name: 'Git / GitHub',                 percent: 80, icon: 'fab fa-github' },
+    { name: 'SQL / MySQL / PostgreSQL',  percent: 90, icon: 'fas fa-database'    },
+    { name: 'MongoDB / NoSQL',           percent: 85, icon: 'fas fa-leaf'         },
+    { name: 'HTML / CSS / JavaScript',   percent: 88, icon: 'fas fa-code'         },
+    { name: 'PHP / Node.js / Python',    percent: 80, icon: 'fas fa-server'       },
+    { name: 'Angular / Vue.js',          percent: 78, icon: 'fas fa-layer-group'  },
+    { name: 'UI/UX Design (Figma)',      percent: 82, icon: 'fas fa-pen-ruler'    },
+    { name: 'Git / GitHub',              percent: 80, icon: 'fab fa-github'       },
   ];
 
   softSkills = [
@@ -44,7 +111,7 @@ export class About implements AfterViewInit {
     {
       horizon: 'Immediate',
       icon: 'fas fa-briefcase',
-      title: 'OJT in Database Development/ Frontend Development',
+      title: 'OJT in Database Development / Frontend Development',
       description: 'Gain hands-on industry experience working on real databases, data pipelines, and backend systems to bridge academic knowledge with professional practice.',
     },
     {
@@ -98,11 +165,83 @@ export class About implements AfterViewInit {
       image: 'assets/cert3.png',
       link: 'assets/certificates/fcc-legacy-javascript-algorithms-and-data-structures.pdf',
     },
+    {
+      title: 'Content Marketing',
+      issuer: 'HubSpot Academy',
+      date: 'August 29, 2025',
+      image: 'assets/certificates/Hubspot-Content Marketing Certificate.png',
+      link: 'assets/certificates/Hubspot-Content Marketing Certificate.pdf',
+    },
+    {
+      title: 'Digital Advertising',
+      issuer: 'HubSpot Academy',
+      date: 'September 28, 2025',
+      image: 'assets/certificates/Hubspot-Digital Advertising Certificate.png',
+      link: 'assets/certificates/Hubspot-Digital Advertising Certificate.pdf',
+    },
+    {
+      title: 'Digital Marketing',
+      issuer: 'HubSpot Academy',
+      date: 'July 28, 2025',
+      image: 'assets/certificates/Hubspot-Digital Marketing Certificate.png',
+      link: 'assets/certificates/Hubspot-Digital Marketing Certificate.pdf',
+    },
+    {
+      title: 'SEO 1',
+      issuer: 'HubSpot Academy',
+      date: 'January 14, 2026',
+      image: 'assets/certificates/Hubspot-SEO 1 Certificata.png',
+      link: 'assets/certificates/Hubspot-SEO 1 Certificata.pdf',
+    },
+    {
+      title: 'SEO 2',
+      issuer: 'HubSpot Academy',
+      date: 'January 28, 2026',
+      image: 'assets/certificates/Hubspot-SEO 2 Certificate.png',
+      link: 'assets/certificates/Hubspot-SEO 2 Certificate.pdf',
+    },
+    {
+      title: 'Design Thinking for Beginners',
+      issuer: 'Simplilearn',
+      date: 'July 24, 2025',
+      image: 'assets/certificates/Simplilearn-Design Thinking for Beginners-1.png',
+      link: 'assets/certificates/Simplilearn-Design Thinking for Beginners.pdf',
+    },
+    {
+      title: 'Introduction to Figma Certificate',
+      issuer: 'Simplilearn',
+      date: 'September 23, 2024',
+      image: 'assets/certificates/Simplilearn-Introduction to Figma Certificate-1.png',
+      link: 'assets/certificates/Simplilearn-Introduction to Figma Certificate.pdf',
+    },
+    {
+      title: 'Introduction to Graphic Design; Basics of UI/UX Design',
+      issuer: 'Simplilearn',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/Simplilearn-Introduction to Graphic Design-Basics of UIUX-1.png',
+      link: 'assets/certificates/Simplilearn-Introduction to Graphic Design-Basics of UIUX.pdf',
+    },
+    {
+      title: 'Introduction to PHP',
+      issuer: 'Simplilearn',
+      date: 'February 2, 2025',
+      image: 'assets/certificates/Simplilearn-Introduction to PHP-1.png',
+      link: 'assets/certificates/Simplilearn-Introduction to PHP.pdf',
+    },
+    {
+      title: 'Website UI/UX Designing using ChatGPT',
+      issuer: 'Simplilearn',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/Simplilearn-Website UIUX Designing using ChatGPT-1.png',
+      link: 'assets/certificates/Simplilearn-Website UIUX Designing using ChatGPT.pdf',
+    },
   ];
+
+  // ── LIFECYCLE ────────────────────────────────────────────
 
   constructor(private el: ElementRef) {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     const observerOptions = {
       threshold: 0.12,
       rootMargin: '0px 0px -50px 0px',
@@ -115,10 +254,15 @@ export class About implements AfterViewInit {
 
           if (entry.target.classList.contains('skills-box')) {
             const bars = entry.target.querySelectorAll('.progress-fill');
-            bars.forEach((bar: any) => {
-              const width = bar.getAttribute('data-width');
-              bar.style.width = width + '%';
+            bars.forEach((bar: Element) => {
+              const htmlBar = bar as HTMLElement;
+              const width = htmlBar.getAttribute('data-width');
+              if (width) htmlBar.style.width = width + '%';
             });
+          }
+
+          if (entry.target.classList.contains('cert-section')) {
+            this.certStartAuto();
           }
         }
       });
@@ -128,5 +272,9 @@ export class About implements AfterViewInit {
       '.reveal, .scale-reveal, .center-title'
     );
     revealElements.forEach((el: HTMLElement) => observer.observe(el));
+  }
+
+  ngOnDestroy(): void {
+    this.certPauseAuto();
   }
 }

@@ -157,23 +157,99 @@
       </div>
     </div>
 
+    <!-- ── CERTIFICATIONS SLIDER ─────────────────────── -->
     <div class="cert-section reveal">
       <h2 class="center-title">Certifications <span>&amp; Training</span></h2>
-      <div class="cert-grid">
-        <div class="cert-card scale-reveal" *ngFor="let cert of certifications">
-          <div class="cert-img-wrapper">
-            <img [src]="cert.image" [alt]="cert.title + ' certificate issued ' + cert.date">
-          </div>
-          <div class="cert-info">
-            <span class="cert-issuer">{{ cert.issuer }}</span>
-            <h4 class="cert-title">{{ cert.title }}</h4>
-            <p class="cert-date"><i class="fas fa-calendar-alt"></i> {{ cert.date }}</p>
-            <a [href]="cert.link" class="download-btn" download>
-              <i class="fas fa-download"></i> Download PDF
-            </a>
+
+      <!-- counter -->
+      <div class="cert-counter">
+        <span class="cert-counter-current">{{ certActiveIndex + 1 }}</span>
+        <span class="cert-counter-sep">/</span>
+        <span class="cert-counter-total">{{ certifications.length }}</span>
+      </div>
+
+      <!-- track wrapper -->
+      <div class="cert-slider-outer"
+           (mouseenter)="certPauseAuto()"
+           (mouseleave)="certResumeAuto()"
+           (touchstart)="certTouchStart($event)"
+           (touchend)="certTouchEnd($event)">
+
+        <!-- prev / next buttons -->
+        <button class="cert-nav cert-nav-prev"
+                (click)="certPrev()"
+                [class.disabled]="certActiveIndex === 0"
+                aria-label="Previous certificate">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="cert-nav cert-nav-next"
+                (click)="certNext()"
+                [class.disabled]="certActiveIndex === certifications.length - 1"
+                aria-label="Next certificate">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- cards track -->
+        <div class="cert-track-clip">
+          <div class="cert-track"
+               [style.transform]="'translateX(' + certTrackX + 'px)'"
+               [class.cert-track-animating]="certAnimating">
+            <div class="cert-slide"
+                 *ngFor="let cert of certifications; let i = index"
+                 [class.cert-slide-active]="i === certActiveIndex"
+                 [class.cert-slide-prev]="i === certActiveIndex - 1"
+                 [class.cert-slide-next]="i === certActiveIndex + 1">
+
+              <div class="cert-card-slider">
+                <!-- image -->
+                <div class="ccs-image-wrap">
+                  <img [src]="cert.image"
+                       [alt]="cert.title + ' — ' + cert.issuer"
+                       loading="lazy">
+                  <div class="ccs-image-overlay">
+                    <a [href]="cert.link" class="ccs-preview-btn" download>
+                      <i class="fas fa-download"></i>
+                      Download
+                    </a>
+                  </div>
+                </div>
+
+                <!-- info -->
+                <div class="ccs-info">
+                  <span class="ccs-issuer">
+                    <i class="fas fa-award"></i>
+                    {{ cert.issuer }}
+                  </span>
+                  <h4 class="ccs-title">{{ cert.title }}</h4>
+                  <p class="ccs-date">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ cert.date }}
+                  </p>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- dot indicators -->
+      <div class="cert-dots">
+        <button class="cert-dot"
+                *ngFor="let cert of certifications; let i = index"
+                [class.cert-dot-active]="i === certActiveIndex"
+                (click)="certGoTo(i)"
+                [attr.aria-label]="'Go to certificate ' + (i + 1)">
+        </button>
+      </div>
+
+      <!-- progress bar -->
+      <div class="cert-progress-bar">
+        <div class="cert-progress-fill"
+             [style.width.%]="((certActiveIndex + 1) / certifications.length) * 100">
+        </div>
+      </div>
+
     </div>
 
     <div class="testimonials-section reveal">

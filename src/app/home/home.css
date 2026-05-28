@@ -59,29 +59,23 @@
 }
 
 .blob-1 {
-  width: 520px;
-  height: 520px;
+  width: 520px; height: 520px;
   background: rgba(230, 126, 34, 0.10);
-  top: -120px;
-  left: -100px;
+  top: -120px; left: -100px;
   animation: blobDrift 22s ease-in-out infinite alternate;
 }
 
 .blob-2 {
-  width: 420px;
-  height: 420px;
+  width: 420px; height: 420px;
   background: rgba(45, 156, 90, 0.08);
-  bottom: -80px;
-  right: -80px;
+  bottom: -80px; right: -80px;
   animation: blobDrift 28s ease-in-out infinite alternate-reverse;
 }
 
 .blob-3 {
-  width: 300px;
-  height: 300px;
+  width: 300px; height: 300px;
   background: rgba(255, 204, 128, 0.06);
-  top: 55%;
-  left: 40%;
+  top: 55%; left: 40%;
   animation: blobDrift 18s ease-in-out infinite alternate;
 }
 
@@ -101,10 +95,8 @@
 
 .node-a {
   width: 12px; height: 12px;
-  background: var(--burnt-orange);
-  opacity: 0.6;
-  top: 18%;
-  left: 12%;
+  background: var(--burnt-orange); opacity: 0.6;
+  top: 18%; left: 12%;
   animation-delay: 0s;
   box-shadow: 0 0 12px rgba(230, 126, 34, 0.5);
 }
@@ -112,8 +104,7 @@
 .node-b {
   width: 8px; height: 8px;
   background: rgba(230, 126, 34, 0.8);
-  top: 70%;
-  left: 22%;
+  top: 70%; left: 22%;
   animation-delay: 1.5s;
   box-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
 }
@@ -121,8 +112,7 @@
 .node-c {
   width: 10px; height: 10px;
   background: rgba(255, 204, 128, 0.7);
-  top: 35%;
-  right: 8%;
+  top: 35%; right: 8%;
   animation-delay: 0.8s;
   box-shadow: 0 0 10px rgba(255, 204, 128, 0.4);
 }
@@ -142,18 +132,14 @@
 }
 
 .line-1 {
-  width: 120px;
-  top: 18.4%;
-  left: 12.8%;
+  width: 120px; top: 18.4%; left: 12.8%;
   transform: rotate(52deg);
   transform-origin: left center;
   animation-delay: 0.3s;
 }
 
 .line-2 {
-  width: 90px;
-  top: 70.4%;
-  left: 22.5%;
+  width: 90px; top: 70.4%; left: 22.5%;
   transform: rotate(-30deg);
   transform-origin: left center;
   animation-delay: 1.8s;
@@ -164,6 +150,7 @@
   50%       { opacity: 0.8; }
 }
 
+/* ── LAYOUT ──────────────────────────────────────────── */
 .content-wrapper {
   display: flex;
   align-items: center;
@@ -172,8 +159,15 @@
   max-width: 1400px;
   z-index: 5;
   position: relative;
+  gap: 40px;
 }
 
+.text-side {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── NAME — fluid scale so it never overflows ────────── */
 .name-container {
   position: relative;
   z-index: 10;
@@ -181,10 +175,10 @@
 }
 
 .name {
-  font-size: 5.3rem;
+  font-size: clamp(2.4rem, 4.5vw, 4.2rem);
   font-weight: 800;
-  line-height: 1.1;
-  margin: 15px 0;
+  line-height: 1.08;
+  margin: 12px 0;
   text-transform: capitalize;
   background: linear-gradient(to bottom, var(--burnt-orange) 60%, #ffcc80);
   background-repeat: no-repeat;
@@ -194,7 +188,7 @@
   display: inline-block;
   transition: all 0.4s ease-in-out;
   filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 }
 
 .hover-name:hover {
@@ -209,6 +203,7 @@
   opacity: 0.7;
   letter-spacing: 2px;
   text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
 .roles {
@@ -216,11 +211,11 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .role-pill {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--burnt-orange);
   background: rgba(230, 126, 34, 0.08);
@@ -237,17 +232,17 @@
 
 .intro-statement {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   line-height: 1.75;
-  max-width: 420px;
-  margin-bottom: 18px;
+  max-width: 400px;
+  margin-bottom: 16px;
 }
 
 .tagline {
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   opacity: 0.55;
-  margin-bottom: 35px;
+  margin-bottom: 28px;
   color: white;
   border-left: 2px solid var(--burnt-orange);
   padding-left: 15px;
@@ -256,8 +251,8 @@
 .cta-group {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: 14px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
@@ -265,9 +260,9 @@
   background: var(--burnt-orange);
   border: none;
   color: white;
-  padding: 16px 38px;
+  padding: 13px 32px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
@@ -287,9 +282,9 @@
   background: transparent;
   border: 1.5px solid rgba(230, 126, 34, 0.5);
   color: var(--burnt-orange);
-  padding: 15px 36px;
+  padding: 12px 30px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   border-radius: 12px;
   cursor: pointer;
   transition: 0.3s;
@@ -302,10 +297,11 @@
   transform: translateY(-3px);
 }
 
+/* ── STATS ───────────────────────────────────────────── */
 .quick-stats {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .quick-stat {
@@ -315,30 +311,30 @@
 }
 
 .qs-num {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--burnt-orange);
   line-height: 1;
 }
 
 .qs-label {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: rgba(255, 255, 255, 0.45);
 }
 
 .qs-divider {
-  width: 1px;
-  height: 32px;
+  width: 1px; height: 28px;
   background: rgba(255,255,255,0.1);
 }
 
+/* ── GRAPHIC ─────────────────────────────────────────── */
 .graphic-side { flex-shrink: 0; }
 
 .isometric-shape img {
   width: 100%;
-  max-width: 550px;
+  max-width: 480px;
   animation: float 6s ease-in-out infinite;
   filter: drop-shadow(0 30px 50px rgba(0,0,0,0.4));
 }
@@ -348,6 +344,7 @@
   50%       { transform: translateY(-20px); }
 }
 
+/* ── REVEAL ANIMATIONS ───────────────────────────────── */
 @keyframes fadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
@@ -364,22 +361,43 @@
 .anim-delay-4 { animation-delay: 0.8s; }
 .anim-delay-5 { animation-delay: 1.0s; }
 
+/* ── RESPONSIVE ──────────────────────────────────────── */
+
+/* Large screens: allow name to grow a bit more */
+@media (min-width: 1400px) {
+  .name { font-size: clamp(3.5rem, 3.5vw, 4.8rem); }
+  .isometric-shape img { max-width: 540px; }
+}
+
+/* Tablet landscape */
+@media (max-width: 1200px) {
+  .name { font-size: clamp(2.2rem, 4vw, 3.6rem); }
+  .isometric-shape img { max-width: 380px; }
+}
+
+/* Tablet portrait — stack vertically */
 @media (max-width: 992px) {
   .hero-container { padding: 100px 5% 60px; height: auto; min-height: 100vh; }
   .content-wrapper { flex-direction: column; text-align: center; gap: 40px; }
   .text-side { min-width: 100%; align-items: center; display: flex; flex-direction: column; }
-  .name { font-size: clamp(2.8rem, 10vw, 3.8rem); margin: 10px auto; }
-  .intro-statement { text-align: center; margin: 0 auto 18px; }
-  .tagline { border-left: none; border-top: 2px solid var(--burnt-orange); padding: 15px 0 0 0; margin: 0 auto 35px; }
+  .name { font-size: clamp(2.6rem, 9vw, 4rem); margin: 10px auto; }
+  .intro-statement { text-align: center; margin: 0 auto 16px; }
+  .tagline { border-left: none; border-top: 2px solid var(--burnt-orange); padding: 15px 0 0 0; margin: 0 auto 28px; }
   .cta-group { justify-content: center; }
   .quick-stats { justify-content: center; }
-  .isometric-shape img { max-width: 300px; }
+  .isometric-shape img { max-width: 280px; }
   .roles { justify-content: center; }
   .data-node, .connector-line { display: none; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .name { font-size: clamp(2rem, 11vw, 2.8rem); }
+  .isometric-shape img { max-width: 220px; }
 }
 
 @media (max-width: 480px) {
   .cta-group { flex-direction: column; width: 100%; }
   .view-btn, .contact-btn { width: 100%; justify-content: center; }
-  .name { font-size: 2.6rem; }
+  .name { font-size: clamp(1.9rem, 11vw, 2.5rem); }
 }
