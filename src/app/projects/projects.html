@@ -1,12 +1,17 @@
-<section class="projects-wrapper">
-  <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
+<section class="projects-wrapper" (mousemove)="onMouseMove($event)">
 
+  <!-- Cursor & Atmosphere -->
+  <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
+  <canvas class="particle-canvas" #particleCanvas></canvas>
   <div class="bg-grid-projects"></div>
+  <div class="noise-overlay"></div>
   <div class="mesh-gradient"></div>
   <div class="bg-decor blur-1"></div>
   <div class="bg-decor blur-2"></div>
+  <div class="bg-decor blur-3"></div>
   <div class="page-number-deco">03</div>
 
+  <!-- ==================== GALLERY VIEW ==================== -->
   <div class="gallery-view" *ngIf="!selectedProject">
 
     <div class="section-eyebrow reveal">
@@ -21,7 +26,7 @@
 
       <div class="stats-bar">
         <div class="stat-item reveal">
-          <span class="stat-num">4th</span>
+          <span class="stat-num" data-target="4">4th</span>
           <span class="stat-label">Year IT</span>
         </div>
         <div class="stat-divider"></div>
@@ -37,32 +42,53 @@
       </div>
     </div>
 
+    <!-- Filter Bar -->
+    <div class="filter-bar reveal">
+      <button
+        class="filter-btn"
+        [class.active]="activeFilter === 'All'"
+        (click)="setFilter('All')"
+      >All</button>
+      <button
+        class="filter-btn"
+        *ngFor="let cat of categories"
+        [class.active]="activeFilter === cat"
+        (click)="setFilter(cat)"
+      >{{ cat }}</button>
+    </div>
+
+    <!-- Projects Grid -->
     <div class="projects-grid">
       <div
         class="project-card"
-        *ngFor="let project of projectList; let i = index"
-        [style.transition-delay]="i * 0.1 + 's'"
+        *ngFor="let project of filteredProjects; let i = index"
+        [style.transition-delay]="i * 0.08 + 's'"
+        [class.featured]="i === 0"
+        (mousemove)="onCardMouseMove($event, cardEl)"
+        (mouseleave)="onCardMouseLeave(cardEl)"
+        #cardEl
       >
         <div class="card-inner">
 
           <div class="project-img">
-            <img [src]="project.thumbnail" [alt]="project.name + ' project thumbnail'">
+            <img [src]="project.thumbnail" [alt]="project.name + ' thumbnail'" loading="lazy">
+            <div class="img-overlay-gradient"></div>
             <div class="category-tag">{{ project.category }}</div>
-
             <div class="project-num-badge">{{ (i + 1).toString().padStart(2, '0') }}</div>
 
             <div class="card-status-pills">
               <span class="status-pill live" *ngIf="project.demoUrl">
                 <span class="live-dot"></span> Live
               </span>
-              <span class="status-pill source">
+              <span class="status-pill source" *ngIf="project.githubUrl">
                 <i class="fab fa-github"></i> Source
               </span>
             </div>
 
             <div class="overlay">
               <button (click)="selectProject(project)" class="view-btn">
-                <i class="fas fa-eye"></i> View Details
+                <span class="view-btn-text"><i class="fas fa-eye"></i> View Details</span>
+                <span class="view-btn-bg"></span>
               </button>
             </div>
           </div>
@@ -82,7 +108,7 @@
           </div>
 
           <div class="card-footer">
-            <a [href]="project.githubUrl" target="_blank" class="card-footer-link" (click)="$event.stopPropagation()">
+            <a [href]="project.githubUrl" target="_blank" class="card-footer-link" *ngIf="project.githubUrl" (click)="$event.stopPropagation()">
               <i class="fab fa-github"></i> GitHub
             </a>
             <a *ngIf="project.demoUrl" [href]="project.demoUrl" target="_blank" class="card-footer-link demo" (click)="$event.stopPropagation()">
@@ -93,22 +119,39 @@
             </button>
           </div>
 
+          <!-- Shine sweep -->
+          <div class="card-shine"></div>
         </div>
       </div>
     </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="filteredProjects.length === 0">
+      <i class="fas fa-search"></i>
+      <p>No projects in this category yet.</p>
+    </div>
+
   </div>
 
+  <!-- ==================== DETAIL VIEW ==================== -->
   <div class="detail-view" *ngIf="selectedProject">
 
     <div class="navigation-header reveal">
       <button (click)="closeDetails()" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to Projects
       </button>
+      <span class="detail-breadcrumb">
+        <span>Portfolio</span>
+        <i class="fas fa-chevron-right"></i>
+        <span>{{ selectedProject.name }}</span>
+      </span>
     </div>
 
-    <div class="detail-header reveal">
+    <div class="detail-hero reveal">
+      <div class="detail-hero-meta">
+        <span class="detail-category-tag">{{ selectedProject.category }}</span>
+      </div>
       <h2 class="center-title">{{ selectedProject.name }}</h2>
-      <span class="detail-category-tag">{{ selectedProject.category }}</span>
     </div>
 
     <div class="detail-layout">
@@ -125,13 +168,17 @@
         <div class="screenshots-block" *ngIf="selectedProject.screenshots?.length">
           <div class="media-label">
             <i class="fas fa-images"></i> Screenshots
+            <span class="media-count">{{ selectedProject.screenshots.length }}</span>
           </div>
-          <img
-            *ngFor="let img of selectedProject.screenshots; let si = index"
-            [src]="img"
-            class="gallery-img"
-            [alt]="selectedProject.name + ' screenshot ' + (si + 1)"
-          >
+          <div class="screenshots-scroll">
+            <img
+              *ngFor="let img of selectedProject.screenshots; let si = index"
+              [src]="img"
+              class="gallery-img"
+              [alt]="selectedProject.name + ' screenshot ' + (si + 1)"
+              (click)="openLightbox(img)"
+            >
+          </div>
         </div>
       </div>
 
@@ -153,7 +200,8 @@
         <div class="info-group" *ngIf="selectedProject.contributions?.length">
           <h3>Contributions</h3>
           <ul class="contributions-list">
-            <li *ngFor="let item of selectedProject.contributions">
+            <li *ngFor="let item of selectedProject.contributions; let ci = index"
+                [style.animation-delay]="ci * 0.1 + 's'">
               <i class="fas fa-check-circle contrib-check"></i>
               {{ item }}
             </li>
@@ -177,6 +225,7 @@
             class="btn-launch"
           >
             <i class="fas fa-external-link-alt"></i> Launch Live Demo
+            <span class="btn-shine"></span>
           </a>
           <ng-template #noDemo>
             <div class="no-demo-notice">
@@ -185,10 +234,10 @@
             </div>
           </ng-template>
 
-          <a 
-            *ngIf="selectedProject.githubUrl; else noSource" 
-            [href]="selectedProject.githubUrl" 
-            target="_blank" 
+          <a
+            *ngIf="selectedProject.githubUrl; else noSource"
+            [href]="selectedProject.githubUrl"
+            target="_blank"
             class="btn-source"
           >
             <i class="fab fa-github"></i> Source Code
@@ -204,4 +253,11 @@
       </div>
     </div>
   </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" *ngIf="lightboxImg" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()"><i class="fas fa-times"></i></button>
+    <img [src]="lightboxImg" class="lightbox-img" (click)="$event.stopPropagation()">
+  </div>
+
 </section>

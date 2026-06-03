@@ -1,80 +1,143 @@
 <section class="hero-container" (mousemove)="onMouseMove($event)">
+
+  <!-- Cursor spotlight -->
   <div class="cursor-spotlight" [style.left.px]="mouseX" [style.top.px]="mouseY"></div>
 
+  <!-- Noise grain overlay -->
+  <div class="grain"></div>
+
+  <!-- Animated constellation canvas -->
+  <canvas class="constellation-canvas" id="constellationCanvas"></canvas>
+
+  <!-- Grid + scanline -->
   <div class="bg-grid"></div>
   <div class="bg-scanline"></div>
+
+  <!-- Ambient blobs -->
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
 
-  <div class="data-node node-a"></div>
-  <div class="data-node node-b"></div>
-  <div class="data-node node-c"></div>
+  <!-- Floating accent orbs -->
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+
+  <!-- Data nodes -->
+  <div class="data-node node-a"><div class="node-ring"></div></div>
+  <div class="data-node node-b"><div class="node-ring"></div></div>
+  <div class="data-node node-c"><div class="node-ring"></div></div>
   <div class="connector-line line-1"></div>
   <div class="connector-line line-2"></div>
 
+  <!-- Main content -->
   <div class="content-wrapper">
+
+    <!-- ── LEFT: Text ── -->
     <div class="text-side">
 
-      <p class="greeting reveal-text anim-delay-1">Hey! I'm</p>
+      <div class="greeting-row reveal-text anim-delay-1">
+        <span class="greeting-line"></span>
+        <p class="greeting">Hey, I'm</p>
+      </div>
 
       <div class="name-container reveal-text anim-delay-2">
-        <h1 class="name hover-name">
-          Aimee Li<br>
-          Marael S.<br>
-          Pangan
+        <h1 class="name hover-name" id="heroName">
+          <span class="name-line">Aimee Li</span>
+          <span class="name-line">Marael S.</span>
+          <span class="name-line name-accent">Pangan</span>
         </h1>
+        <div class="name-underline"></div>
       </div>
 
       <div class="roles reveal-text anim-delay-3">
-        <span class="role-pill">Database</span>
-        <span class="role-divider">•</span>
-        <span class="role-pill">UI/UX</span>
-        <span class="role-divider">•</span>
-        <span class="role-pill">Web Development</span>
+        <span class="role-pill">
+          <span class="pill-dot"></span>Database
+        </span>
+        <span class="role-divider">·</span>
+        <span class="role-pill">
+          <span class="pill-dot"></span>UI/UX
+        </span>
+        <span class="role-divider">·</span>
+        <span class="role-pill">
+          <span class="pill-dot"></span>Web Development
+        </span>
       </div>
 
       <p class="intro-statement reveal-text anim-delay-4">
-        An IT student at Holy Angel University. I turn structured data and clean code 
+        An IT student at Holy Angel University turning structured data and clean code
         into systems that are as reliable as they are intuitive.
       </p>
 
-      <p class="tagline reveal-text anim-delay-4">
-        "Where structure meets creativity."
-      </p>
+      <div class="tagline reveal-text anim-delay-4">
+        <span class="tagline-mark">"</span>
+        Where structure meets creativity.
+        <span class="tagline-mark">"</span>
+      </div>
 
       <div class="cta-group reveal-text anim-delay-5">
         <button routerLink="/projects" class="view-btn">
-          View Projects <span class="arrow">&rarr;</span>
+          <span class="btn-bg"></span>
+          <span class="btn-label">View Projects</span>
+          <span class="btn-arrow">→</span>
         </button>
         <button routerLink="/contact" class="contact-btn">
-          Contact Me
+          <span class="btn-label">Contact Me</span>
         </button>
       </div>
 
       <div class="quick-stats reveal-text anim-delay-5">
         <div class="quick-stat">
-          <span class="qs-num">5+</span>
+          <div class="stat-top">
+            <span class="qs-num" data-target="5">0</span><span class="qs-plus">+</span>
+          </div>
           <span class="qs-label">Projects</span>
         </div>
         <div class="qs-divider"></div>
         <div class="quick-stat">
-          <span class="qs-num">3+</span>
+          <div class="stat-top">
+            <span class="qs-num" data-target="3">0</span><span class="qs-plus">+</span>
+          </div>
           <span class="qs-label">Certifications</span>
         </div>
         <div class="qs-divider"></div>
         <div class="quick-stat">
-          <span class="qs-num">OJT</span>
+          <div class="stat-top">
+            <span class="qs-num qs-text">OJT</span>
+          </div>
           <span class="qs-label">Ready</span>
         </div>
       </div>
 
     </div>
 
+    <!-- ── RIGHT: Graphic ── -->
     <div class="graphic-side reveal-text anim-delay-2">
-      <div class="isometric-shape">
-        <img src="/assets/hero-image-database.png" alt="3D Development Graphic">
+      <div class="holo-card" id="holoCard">
+        <div class="holo-shine"></div>
+        <div class="holo-border"></div>
+        <div class="isometric-shape">
+          <img src="/assets/hero-image-database.png" alt="3D Development Graphic">
+        </div>
+        <!-- Corner accents -->
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <!-- Status badge -->
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          Available for OJT
+        </div>
       </div>
+      <!-- Floating skill tags -->
+      <div class="float-tag tag-1">SQL</div>
+      <div class="float-tag tag-2">Angular</div>
+      <div class="float-tag tag-3">Figma</div>
     </div>
+
   </div>
+
+
 </section>

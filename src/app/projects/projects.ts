@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, HostListener } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-projects',
@@ -12,6 +12,10 @@ export class Projects implements AfterViewInit {
   selectedProject: any = null;
   mouseX = 0;
   mouseY = 0;
+  activeFilter = 'All';
+  lightboxImg: string | null = null;
+
+  @ViewChild('particleCanvas') particleCanvasRef!: ElementRef<HTMLCanvasElement>;
 
   projectList = [
     {
@@ -99,7 +103,7 @@ export class Projects implements AfterViewInit {
       name: 'Multi-Vendor Inventory System',
       category: 'Full-Stack Web',
       shortDesc: 'A robust inventory management system for multi-vendor environments.',
-      fullDescription: 'A robust, enterprise-ready inventory management system built with Python and PostgreSQL. This application provides a comprehensive solution for tracking products, managing vendor relationships, and generating business-critical reports. The full source code is available on GitHub for review and deployment.',
+      fullDescription: 'A robust, enterprise-ready inventory management system built with Python and PostgreSQL. This application provides a comprehensive solution for tracking products, managing vendor relationships, and generating business-critical reports.',
       role: 'Backend Developer',
       contributions: [
         'Designed the full PostgreSQL schema for multi-vendor product and supplier relationships',
@@ -118,8 +122,8 @@ export class Projects implements AfterViewInit {
       id: 6,
       name: 'AningKabalen',
       category: 'Full-Stack Web',
-      shortDesc: 'AningKabalen is a full-stack, real-time digital marketplace designed to eliminate predatory middlemen and connect local farmers in Pampanga directly with HORECA (Hotel, Restaurant, Catering) buyers.',
-      fullDescription: 'AningKabalen is a full-stack, real-time digital marketplace designed to eliminate predatory middlemen and connect local farmers in Pampanga directly with HORECA (Hotel, Restaurant, Catering) buyers. Built on a reactive Angular frontend and a robust Node.js/Express backend, the platform combines a Live Freshness Feed and a Digital Handshake (Forward Contract) system to ensure fair pricing and strengthen localized food security.',
+      shortDesc: 'A real-time digital marketplace connecting local farmers directly with HORECA buyers.',
+      fullDescription: 'AningKabalen is a full-stack, real-time digital marketplace designed to eliminate predatory middlemen and connect local farmers in Pampanga directly with HORECA (Hotel, Restaurant, Catering) buyers. Built on a reactive Angular frontend and a robust Node.js/Express backend, the platform combines a Live Freshness Feed and a Digital Handshake system to ensure fair pricing and strengthen localized food security.',
       role: 'Systems Analyst & Database Designer',
       contributions: [
         'Spearheaded the initial system proposal and feature roadmap, defining the marketplace mechanics and structural business requirements.',
@@ -136,9 +140,9 @@ export class Projects implements AfterViewInit {
     {
       id: 7,
       name: 'Bossrich Photography',
-      category: 'Web Design & SEO Optimization',
-      shortDesc: 'Bossrich Photography is a static, highly optimized responsive showcase website built as a digital portfolio and lead generation hub for a professional photography business.',
-      fullDescription: 'Bossrich Photography is a static responsive website engineered to maximize search engine visibility and user engagement for a local photography studio. Built with WordPress, the platform focuses heavily on on-page SEO architecture, visual hierarchy, and localized content marketing strategies to rank for highly competitive industry keywords.',
+      category: 'Web Design & SEO',
+      shortDesc: 'A highly optimized responsive showcase website for a professional photography studio.',
+      fullDescription: 'Bossrich Photography is a static responsive website engineered to maximize search engine visibility and user engagement for a local photography studio. Built with WordPress, the platform focuses heavily on on-page SEO architecture, visual hierarchy, and localized content marketing strategies.',
       role: 'UI/UX Designer & SEO Specialist',
       contributions: [
         'Spearheaded the UI/UX design layout, focusing on visual hierarchy, cross-device responsiveness, and a friction-free user portfolio experience.',
@@ -155,6 +159,15 @@ export class Projects implements AfterViewInit {
     },
   ];
 
+  get categories(): string[] {
+    return [...new Set(this.projectList.map(p => p.category))];
+  }
+
+  get filteredProjects() {
+    if (this.activeFilter === 'All') return this.projectList;
+    return this.projectList.filter(p => p.category === this.activeFilter);
+  }
+
   constructor(private el: ElementRef) {}
 
   @HostListener('document:mousemove', ['$event'])
@@ -163,8 +176,98 @@ export class Projects implements AfterViewInit {
     this.mouseY = e.clientY;
   }
 
+  onCardMouseMove(e: MouseEvent, card: HTMLElement) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = ((y - cy) / cy) * -8;
+    const rotY = ((x - cx) / cx) * 8;
+    const inner = card.querySelector('.card-inner') as HTMLElement;
+    if (inner) {
+      inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-10px)`;
+      inner.style.transition = 'transform 0.05s ease';
+    }
+    const shine = card.querySelector('.card-shine') as HTMLElement;
+    if (shine) {
+      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.07) 0%, transparent 60%)`;
+    }
+  }
+
+  onCardMouseLeave(card: HTMLElement) {
+    const inner = card.querySelector('.card-inner') as HTMLElement;
+    if (inner) {
+      inner.style.transform = '';
+      inner.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
+    }
+    const shine = card.querySelector('.card-shine') as HTMLElement;
+    if (shine) shine.style.background = 'none';
+  }
+
   ngAfterViewInit() {
     this.initScrollAnimations();
+    this.initParticles();
+  }
+
+  initParticles() {
+    const canvas = this.particleCanvasRef?.nativeElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles: { x: number; y: number; vx: number; vy: number; r: number; alpha: number }[] = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.4 + 0.05,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(230, 126, 34, ${p.alpha})`;
+        ctx.fill();
+      });
+      // draw connecting lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(230, 126, 34, ${0.06 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    };
+    draw();
   }
 
   initScrollAnimations() {
@@ -174,12 +277,17 @@ export class Projects implements AfterViewInit {
           entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.08 });
 
     const revealElements = this.el.nativeElement.querySelectorAll(
       '.reveal, .project-card, .center-title'
     );
     revealElements.forEach((el: HTMLElement) => observer.observe(el));
+  }
+
+  setFilter(cat: string) {
+    this.activeFilter = cat;
+    setTimeout(() => this.initScrollAnimations(), 50);
   }
 
   selectProject(project: any) {
@@ -192,5 +300,13 @@ export class Projects implements AfterViewInit {
     this.selectedProject = null;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => this.initScrollAnimations(), 100);
+  }
+
+  openLightbox(img: string) {
+    this.lightboxImg = img;
+  }
+
+  closeLightbox() {
+    this.lightboxImg = null;
   }
 }

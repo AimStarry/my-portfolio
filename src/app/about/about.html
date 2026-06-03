@@ -5,7 +5,13 @@
   <div class="bg-grid-about"></div>
   <div class="bg-blob blob-tl"></div>
   <div class="bg-blob blob-br"></div>
+  <div class="bg-blob blob-mid"></div>
   <div class="page-number-deco">02</div>
+
+  <!-- Floating particles -->
+  <div class="particles-layer" aria-hidden="true">
+    <span class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]"></span>
+  </div>
 
   <div class="main-wrapper">
 
@@ -21,6 +27,7 @@
       <div class="bio-image">
         <div class="image-accent"></div>
         <div class="image-ring"></div>
+        <div class="image-ring image-ring-2"></div>
         <img src="assets/profile.png" alt="Aimee Pangan - BS Information Technology student at Holy Angel University">
         <div class="image-badge">
           <span class="badge-dot"></span>
@@ -48,17 +55,32 @@
           </div>
         </div>
 
-        <a href="assets/Pangan_Resume.pdf" download class="resume-download-btn">
-          <i class="fas fa-download"></i>
-          Download Resume
-        </a>
+        <div class="bio-cta-row">
+          <a href="assets/Pangan_Resume.pdf" download class="resume-download-btn">
+            <i class="fas fa-download"></i>
+            Download Resume
+          </a>
+          <a href="mailto:aimeelimaraelst@gmail.com" class="contact-ghost-btn">
+            <i class="fas fa-paper-plane"></i>
+            Say Hello
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATS ROW ───────────────────────────────── -->
+    <div class="stats-row reveal" aria-label="Key statistics">
+      <div class="stat-card" *ngFor="let s of stats">
+        <span class="stat-value">{{ s.current }}{{ s.suffix }}</span>
+        <span class="stat-label">{{ s.label }}</span>
+        <div class="stat-glow"></div>
       </div>
     </div>
 
     <div class="content-grid">
       <div class="glass-panel skills-box reveal">
         <h2 class="center-title">Technical <span>Expertise</span></h2>
-        <div class="skill-item" *ngFor="let s of techSkills">
+        <div class="skill-item" *ngFor="let s of techSkills; let i = index" [style.transition-delay]="(i * 0.07) + 's'">
           <div class="skill-info">
             <span class="skill-name">
               <i [class]="s.icon"></i>
@@ -144,7 +166,7 @@
         I'm actively seeking an <strong>OJT opportunity in Frontend Development / Database Development</strong> where I can apply my skills in a real-world environment. My short-term and long-term goals are rooted in becoming a well-rounded data professional.
       </p>
       <div class="goals-grid">
-        <div class="goal-card" *ngFor="let goal of careerGoals">
+        <div class="goal-card" *ngFor="let goal of careerGoals; let i = index" [style.animation-delay]="(i * 0.15) + 's'">
           <div class="goal-icon-wrap">
             <i [class]="goal.icon"></i>
           </div>
@@ -159,32 +181,42 @@
 
     <!-- ── CERTIFICATIONS SLIDER ─────────────────────── -->
     <div class="cert-section reveal">
-      <h2 class="center-title">Certifications <span>&amp; Training</span></h2>
-
-      <!-- counter -->
-      <div class="cert-counter">
-        <span class="cert-counter-current">{{ certActiveIndex + 1 }}</span>
-        <span class="cert-counter-sep">/</span>
-        <span class="cert-counter-total">{{ certifications.length }}</span>
+      <div class="cert-section-header">
+        <h2 class="center-title">Certifications <span>&amp; Training</span></h2>
+        <div class="cert-header-right">
+          <!-- counter -->
+          <div class="cert-counter">
+            <span class="cert-counter-current">{{ certActiveIndex + 1 }}</span>
+            <span class="cert-counter-sep">/</span>
+            <span class="cert-counter-total">{{ certifications.length }}</span>
+          </div>
+          <!-- tier legend -->
+          <div class="cert-tier-legend">
+            <span class="tier-badge tier-1">Industry</span>
+            <span class="tier-badge tier-2">Technical</span>
+            <span class="tier-badge tier-3">Skills</span>
+            <span class="tier-badge tier-4">Marketing</span>
+          </div>
+        </div>
       </div>
 
       <!-- track wrapper -->
       <div class="cert-slider-outer"
            (mouseenter)="certPauseAuto()"
            (mouseleave)="certResumeAuto()"
+           (mousedown)="certMouseDown($event)"
            (touchstart)="certTouchStart($event)"
+           (touchmove)="certTouchMove($event)"
            (touchend)="certTouchEnd($event)">
 
         <!-- prev / next buttons -->
         <button class="cert-nav cert-nav-prev"
                 (click)="certPrev()"
-                [class.disabled]="certActiveIndex === 0"
                 aria-label="Previous certificate">
           <i class="fas fa-chevron-left"></i>
         </button>
         <button class="cert-nav cert-nav-next"
                 (click)="certNext()"
-                [class.disabled]="certActiveIndex === certifications.length - 1"
                 aria-label="Next certificate">
           <i class="fas fa-chevron-right"></i>
         </button>
@@ -192,26 +224,31 @@
         <!-- cards track -->
         <div class="cert-track-clip">
           <div class="cert-track"
-               [style.transform]="'translateX(' + certTrackX + 'px)'"
-               [class.cert-track-animating]="certAnimating">
+               [style.transform]="certTrackTransform"
+               [class.cert-track-animating]="certAnimating && !certDragActive">
             <div class="cert-slide"
                  *ngFor="let cert of certifications; let i = index"
                  [class.cert-slide-active]="i === certActiveIndex"
                  [class.cert-slide-prev]="i === certActiveIndex - 1"
-                 [class.cert-slide-next]="i === certActiveIndex + 1">
+                 [class.cert-slide-next]="i === certActiveIndex + 1"
+                 (click)="certGoTo(i)">
 
-              <div class="cert-card-slider">
+              <div class="cert-card-slider" [attr.data-tier]="cert.tier">
+                <!-- tier indicator stripe -->
+                <div class="cert-tier-stripe" [attr.data-tier]="cert.tier"></div>
+
                 <!-- image -->
                 <div class="ccs-image-wrap">
                   <img [src]="cert.image"
                        [alt]="cert.title + ' — ' + cert.issuer"
                        loading="lazy">
                   <div class="ccs-image-overlay">
-                    <a [href]="cert.link" class="ccs-preview-btn" download>
+                    <a [href]="cert.link" class="ccs-preview-btn" download (click)="$event.stopPropagation()">
                       <i class="fas fa-download"></i>
                       Download
                     </a>
                   </div>
+                  <span class="cert-badge-pill" [attr.data-tier]="cert.tier">{{ cert.badge }}</span>
                 </div>
 
                 <!-- info -->
@@ -234,17 +271,21 @@
       </div>
 
       <!-- dot indicators -->
-      <div class="cert-dots">
+      <div class="cert-dots" role="tablist" aria-label="Certificate navigation">
         <button class="cert-dot"
                 *ngFor="let cert of certifications; let i = index"
                 [class.cert-dot-active]="i === certActiveIndex"
                 (click)="certGoTo(i)"
+                role="tab"
+                [attr.aria-selected]="i === certActiveIndex"
                 [attr.aria-label]="'Go to certificate ' + (i + 1)">
         </button>
       </div>
 
       <!-- progress bar -->
-      <div class="cert-progress-bar">
+      <div class="cert-progress-bar" role="progressbar"
+           [attr.aria-valuenow]="certActiveIndex + 1"
+           [attr.aria-valuemax]="certifications.length">
         <div class="cert-progress-fill"
              [style.width.%]="((certActiveIndex + 1) / certifications.length) * 100">
         </div>

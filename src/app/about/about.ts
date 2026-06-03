@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, HostListener, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, HostListener, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-about',
@@ -13,47 +13,69 @@ export class About implements AfterViewInit, OnDestroy {
   mouseX = 0;
   mouseY = 0;
 
+  // For smooth spotlight interpolation
+  private targetX = 0;
+  private targetY = 0;
+  private rafId: any;
+
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
-    this.mouseX = event.clientX;
-    this.mouseY = event.clientY;
+    this.targetX = event.clientX;
+    this.targetY = event.clientY;
+  }
+
+  private animateSpotlight(): void {
+    this.mouseX += (this.targetX - this.mouseX) * 0.08;
+    this.mouseY += (this.targetY - this.mouseY) * 0.08;
+    this.rafId = requestAnimationFrame(() => this.animateSpotlight());
   }
 
   // ── CERT SLIDER STATE ────────────────────────────────────
   certActiveIndex = 0;
   certAnimating   = false;
   certTrackX      = 0;
+  certDragActive  = false;
 
   private certAutoTimer: any;
   private certTouchStartX = 0;
+  private certDragStartX  = 0;
+  private certDragCurrentX = 0;
   private readonly CERT_SLIDE_W = 480;
-  private readonly CERT_AUTO_MS = 4000;
+  private readonly CERT_AUTO_MS = 5000;
+
+  get certDragOffset(): number {
+    return this.certDragActive ? this.certDragCurrentX - this.certDragStartX : 0;
+  }
+
+  get certTrackTransform(): string {
+    const base = -this.certActiveIndex * this.CERT_SLIDE_W;
+    return `translateX(${base + this.certDragOffset}px)`;
+  }
 
   certGoTo(index: number): void {
     if (this.certAnimating) return;
     this.certAnimating = true;
     this.certActiveIndex = Math.max(0, Math.min(index, this.certifications.length - 1));
     this.certTrackX = -this.certActiveIndex * this.CERT_SLIDE_W;
-    setTimeout(() => { this.certAnimating = false; }, 600);
+    setTimeout(() => { this.certAnimating = false; }, 650);
   }
 
   certNext(): void {
-    if (this.certActiveIndex < this.certifications.length - 1) {
-      this.certGoTo(this.certActiveIndex + 1);
-    } else {
-      this.certGoTo(0);
-    }
+    const next = this.certActiveIndex < this.certifications.length - 1
+      ? this.certActiveIndex + 1
+      : 0;
+    this.certGoTo(next);
   }
 
   certPrev(): void {
-    if (this.certActiveIndex > 0) {
-      this.certGoTo(this.certActiveIndex - 1);
-    } else {
-      this.certGoTo(this.certifications.length - 1);
-    }
+    const prev = this.certActiveIndex > 0
+      ? this.certActiveIndex - 1
+      : this.certifications.length - 1;
+    this.certGoTo(prev);
   }
 
   certStartAuto(): void {
+    this.certPauseAuto();
     this.certAutoTimer = setInterval(() => this.certNext(), this.CERT_AUTO_MS);
   }
 
@@ -67,12 +89,47 @@ export class About implements AfterViewInit, OnDestroy {
 
   certTouchStart(e: TouchEvent): void {
     this.certTouchStartX = e.changedTouches[0].clientX;
+    this.certDragStartX  = e.changedTouches[0].clientX;
+    this.certDragCurrentX = e.changedTouches[0].clientX;
+    this.certDragActive  = true;
     this.certPauseAuto();
+  }
+
+  certTouchMove(e: TouchEvent): void {
+    if (!this.certDragActive) return;
+    this.certDragCurrentX = e.changedTouches[0].clientX;
   }
 
   certTouchEnd(e: TouchEvent): void {
     const dx = e.changedTouches[0].clientX - this.certTouchStartX;
+    this.certDragActive = false;
     if (Math.abs(dx) > 50) {
+      dx < 0 ? this.certNext() : this.certPrev();
+    }
+    this.certResumeAuto();
+  }
+
+  // Mouse drag for desktop
+  certMouseDown(e: MouseEvent): void {
+    this.certDragStartX   = e.clientX;
+    this.certDragCurrentX = e.clientX;
+    this.certDragActive   = true;
+    this.certPauseAuto();
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onDocMouseMove(e: MouseEvent): void {
+    if (this.certDragActive) {
+      this.certDragCurrentX = e.clientX;
+    }
+  }
+
+  @HostListener('mouseup', ['$event'])
+  onDocMouseUp(e: MouseEvent): void {
+    if (!this.certDragActive) return;
+    const dx = e.clientX - this.certDragStartX;
+    this.certDragActive = false;
+    if (Math.abs(dx) > 60) {
       dx < 0 ? this.certNext() : this.certPrev();
     }
     this.certResumeAuto();
@@ -143,13 +200,26 @@ export class About implements AfterViewInit, OnDestroy {
     },
   ];
 
+  // Ordered: Technical/industry-recognized first, then specialized, then marketing
   certifications = [
+    // Tier 1 — High industry recognition
     {
-      title: 'Backend Development and APIs V8',
-      issuer: 'freeCodeCamp',
-      date: 'September 27, 2025',
-      image: 'assets/cert1.png',
-      link: 'assets/certificates/fcc-backend-development.pdf',
+      title: 'Google Analytics Certification',
+      issuer: 'Skillshop by Google',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/Skillshop-Google Analytics Certification.png',
+      link: 'assets/certificates/Skillshop-Google Analytics Certification.pdf',
+      tier: 1,
+      badge: 'Industry Standard',
+    },
+    {
+      title: 'Cloud Foundations Training',
+      issuer: 'AWS Academy',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/AWS-Cloud Foundations Training Certificate-1.png',
+      link: 'assets/certificates/AWS Cloud Foundations Training Certificate.pdf',
+      tier: 1,
+      badge: 'Cloud',
     },
     {
       title: 'JavaScript Essentials 1',
@@ -157,6 +227,18 @@ export class About implements AfterViewInit, OnDestroy {
       date: 'October 25, 2024',
       image: 'assets/cert2.png',
       link: 'assets/certificates/cisco-js.pdf',
+      tier: 1,
+      badge: 'Networking Leader',
+    },
+    // Tier 2 — freeCodeCamp (portfolio-relevant)
+    {
+      title: 'Backend Development and APIs V8',
+      issuer: 'freeCodeCamp',
+      date: 'September 27, 2025',
+      image: 'assets/cert1.png',
+      link: 'assets/certificates/fcc-backend-development.pdf',
+      tier: 2,
+      badge: 'Full-Stack',
     },
     {
       title: 'Legacy JavaScript Algorithms and Data Structures V7',
@@ -164,48 +246,27 @@ export class About implements AfterViewInit, OnDestroy {
       date: 'September 30, 2025',
       image: 'assets/cert3.png',
       link: 'assets/certificates/fcc-legacy-javascript-algorithms-and-data-structures.pdf',
+      tier: 2,
+      badge: 'Algorithms',
     },
+    // Tier 3 — Simplilearn technical
     {
-      title: 'Content Marketing',
-      issuer: 'HubSpot Academy',
-      date: 'August 29, 2025',
-      image: 'assets/certificates/Hubspot-Content Marketing Certificate.png',
-      link: 'assets/certificates/Hubspot-Content Marketing Certificate.pdf',
-    },
-    {
-      title: 'Digital Advertising',
-      issuer: 'HubSpot Academy',
-      date: 'September 28, 2025',
-      image: 'assets/certificates/Hubspot-Digital Advertising Certificate.png',
-      link: 'assets/certificates/Hubspot-Digital Advertising Certificate.pdf',
-    },
-    {
-      title: 'Digital Marketing',
-      issuer: 'HubSpot Academy',
-      date: 'July 28, 2025',
-      image: 'assets/certificates/Hubspot-Digital Marketing Certificate.png',
-      link: 'assets/certificates/Hubspot-Digital Marketing Certificate.pdf',
-    },
-    {
-      title: 'SEO 1',
-      issuer: 'HubSpot Academy',
-      date: 'January 14, 2026',
-      image: 'assets/certificates/Hubspot-SEO 1 Certificata.png',
-      link: 'assets/certificates/Hubspot-SEO 1 Certificata.pdf',
-    },
-    {
-      title: 'SEO 2',
-      issuer: 'HubSpot Academy',
-      date: 'January 28, 2026',
-      image: 'assets/certificates/Hubspot-SEO 2 Certificate.png',
-      link: 'assets/certificates/Hubspot-SEO 2 Certificate.pdf',
-    },
-    {
-      title: 'Design Thinking for Beginners',
+      title: 'SQL Optimization for Beginners',
       issuer: 'Simplilearn',
-      date: 'July 24, 2025',
-      image: 'assets/certificates/Simplilearn-Design Thinking for Beginners-1.png',
-      link: 'assets/certificates/Simplilearn-Design Thinking for Beginners.pdf',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/Simplilearn-SQL Optimization for Beginners-1.png',
+      link: 'assets/certificates/Simplilearn-SQL Optimization for Beginners.pdf',
+      tier: 3,
+      badge: 'Database',
+    },
+    {
+      title: 'Fundamentals of Database: What is SQL?',
+      issuer: 'Simplilearn',
+      date: 'August 27, 2025',
+      image: 'assets/certificates/Simplilearn-Fundamentals of Database-What is SQL-1.png',
+      link: 'assets/certificates/Simplilearn-Fundamentals of Database-What is SQL.pdf',
+      tier: 3,
+      badge: 'Database',
     },
     {
       title: 'Introduction to Figma Certificate',
@@ -213,6 +274,8 @@ export class About implements AfterViewInit, OnDestroy {
       date: 'September 23, 2024',
       image: 'assets/certificates/Simplilearn-Introduction to Figma Certificate-1.png',
       link: 'assets/certificates/Simplilearn-Introduction to Figma Certificate.pdf',
+      tier: 3,
+      badge: 'Design',
     },
     {
       title: 'Introduction to Graphic Design; Basics of UI/UX Design',
@@ -220,13 +283,8 @@ export class About implements AfterViewInit, OnDestroy {
       date: 'August 27, 2025',
       image: 'assets/certificates/Simplilearn-Introduction to Graphic Design-Basics of UIUX-1.png',
       link: 'assets/certificates/Simplilearn-Introduction to Graphic Design-Basics of UIUX.pdf',
-    },
-    {
-      title: 'Introduction to PHP',
-      issuer: 'Simplilearn',
-      date: 'February 2, 2025',
-      image: 'assets/certificates/Simplilearn-Introduction to PHP-1.png',
-      link: 'assets/certificates/Simplilearn-Introduction to PHP.pdf',
+      tier: 3,
+      badge: 'UI/UX',
     },
     {
       title: 'Website UI/UX Designing using ChatGPT',
@@ -234,14 +292,90 @@ export class About implements AfterViewInit, OnDestroy {
       date: 'August 27, 2025',
       image: 'assets/certificates/Simplilearn-Website UIUX Designing using ChatGPT-1.png',
       link: 'assets/certificates/Simplilearn-Website UIUX Designing using ChatGPT.pdf',
+      tier: 3,
+      badge: 'UI/UX',
     },
+    {
+      title: 'Design Thinking for Beginners',
+      issuer: 'Simplilearn',
+      date: 'July 24, 2025',
+      image: 'assets/certificates/Simplilearn-Design Thinking for Beginners-1.png',
+      link: 'assets/certificates/Simplilearn-Design Thinking for Beginners.pdf',
+      tier: 3,
+      badge: 'Design',
+    },
+    {
+      title: 'Introduction to PHP',
+      issuer: 'Simplilearn',
+      date: 'February 2, 2025',
+      image: 'assets/certificates/Simplilearn-Introduction to PHP-1.png',
+      link: 'assets/certificates/Simplilearn-Introduction to PHP.pdf',
+      tier: 3,
+      badge: 'Backend',
+    },
+    // Tier 4 — HubSpot marketing
+    {
+      title: 'SEO 1',
+      issuer: 'HubSpot Academy',
+      date: 'January 14, 2026',
+      image: 'assets/certificates/Hubspot-SEO 1 Certificata.png',
+      link: 'assets/certificates/Hubspot-SEO 1 Certificata.pdf',
+      tier: 4,
+      badge: 'SEO',
+    },
+    {
+      title: 'SEO 2',
+      issuer: 'HubSpot Academy',
+      date: 'January 28, 2026',
+      image: 'assets/certificates/Hubspot-SEO 2 Certificate.png',
+      link: 'assets/certificates/Hubspot-SEO 2 Certificate.pdf',
+      tier: 4,
+      badge: 'SEO',
+    },
+    {
+      title: 'Digital Marketing',
+      issuer: 'HubSpot Academy',
+      date: 'July 28, 2025',
+      image: 'assets/certificates/Hubspot-Digital Marketing Certificate.png',
+      link: 'assets/certificates/Hubspot-Digital Marketing Certificate.pdf',
+      tier: 4,
+      badge: 'Marketing',
+    },
+    {
+      title: 'Content Marketing',
+      issuer: 'HubSpot Academy',
+      date: 'August 29, 2025',
+      image: 'assets/certificates/Hubspot-Content Marketing Certificate.png',
+      link: 'assets/certificates/Hubspot-Content Marketing Certificate.pdf',
+      tier: 4,
+      badge: 'Marketing',
+    },
+    {
+      title: 'Digital Advertising',
+      issuer: 'HubSpot Academy',
+      date: 'September 28, 2025',
+      image: 'assets/certificates/Hubspot-Digital Advertising Certificate.png',
+      link: 'assets/certificates/Hubspot-Digital Advertising Certificate.pdf',
+      tier: 4,
+      badge: 'Marketing',
+    },
+  ];
+
+  // Stat counters for animated numbers
+  stats = [
+    { label: 'Projects Completed', value: 5, suffix: '+', current: 0 },
+    { label: 'Certifications', value: 10, suffix: '+', current: 0 },
+    { label: 'Technologies', value: 7, suffix: '+', current: 0 },
+    { label: 'GWA', value: 1.5, suffix: '', current: 0, isDecimal: true },
   ];
 
   // ── LIFECYCLE ────────────────────────────────────────────
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    this.animateSpotlight();
+
     const observerOptions = {
       threshold: 0.12,
       rootMargin: '0px 0px -50px 0px',
@@ -264,6 +398,10 @@ export class About implements AfterViewInit, OnDestroy {
           if (entry.target.classList.contains('cert-section')) {
             this.certStartAuto();
           }
+
+          if (entry.target.classList.contains('stats-row')) {
+            this.animateCounters();
+          }
         }
       });
     }, observerOptions);
@@ -274,7 +412,27 @@ export class About implements AfterViewInit, OnDestroy {
     revealElements.forEach((el: HTMLElement) => observer.observe(el));
   }
 
+  private animateCounters(): void {
+    this.stats.forEach((stat) => {
+      const duration = 1800;
+      const steps = 60;
+      const increment = stat.value / steps;
+      let count = 0;
+      const timer = setInterval(() => {
+        count += increment;
+        if (count >= stat.value) {
+          stat.current = stat.value;
+          clearInterval(timer);
+        } else {
+          stat.current = stat.isDecimal ? Math.round(count * 10) / 10 : Math.floor(count);
+        }
+        this.cdr.markForCheck();
+      }, duration / steps);
+    });
+  }
+
   ngOnDestroy(): void {
     this.certPauseAuto();
+    if (this.rafId) cancelAnimationFrame(this.rafId);
   }
 }
