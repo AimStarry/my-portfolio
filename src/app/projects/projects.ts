@@ -134,7 +134,7 @@ export class Projects implements AfterViewInit {
       thumbnail: 'assets/p6-main.png',
       screenshots: ['assets/p6-ss1.png', 'assets/p6-ss2.png'],
       demoVideoUrl: null,
-      demoUrl: null,
+      demoUrl: 'https://aningkabalen.site/',
       githubUrl: 'https://github.com/AimStarry/AningKabalen',
     },
     {
